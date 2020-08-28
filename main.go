@@ -101,7 +101,7 @@ func main() {
 			// path
 			para = doc.AddParagraph()
 			run = para.AddRun()
-			run.AddText(fmt.Sprintf("Path : %s", value))
+			run.AddText(fmt.Sprintf("Path : %s   [%s]", value, key))
 
 			// content-type
 			para = doc.AddParagraph()
@@ -123,11 +123,14 @@ func main() {
 
 			// response params
 			var rspData []RspParam
-			response := api[key].(map[string]interface{})["responses"].(map[string]interface{})["200"].(map[string]interface{})
-			if _, ok := response["schema"].(map[string]interface{})["$ref"]; ok {
-				rspStr := response["schema"].(map[string]interface{})["$ref"].(string)[14:]
-				rspData = searchRspData(dataMap, rspStr, "")
+			if _, ok := api[key].(map[string]interface{})["responses"]; ok {
+				response := api[key].(map[string]interface{})["responses"].(map[string]interface{})["200"].(map[string]interface{})
+				if _, ok := response["schema"].(map[string]interface{})["$ref"]; ok {
+					rspStr := response["schema"].(map[string]interface{})["$ref"].(string)[14:]
+					rspData = searchRspData(dataMap, rspStr, "")
+				}
 			}
+
 			responseParam(doc, rspData)
 
 			doc.AddParagraph().AddRun().AddText("")
